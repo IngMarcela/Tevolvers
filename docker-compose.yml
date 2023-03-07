@@ -1,0 +1,55 @@
+version: '3.7'
+
+services:
+  db:
+    container_name: "test_db"
+
+    build:
+      context: .
+      dockerfile: db.dockerfile
+    networks:
+      default:
+        ipv4_address: 172.20.0.6
+    network_mode: testuser_default
+    restart: always
+    ports:
+      - "3316:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "password"
+      MYSQL_RANDOM_ROOT_PASSWORD: "password"
+      MYSQL_DATABASE: "employees"
+      MYSQL_USER: "user"
+      MYSQL_PASSWORD: "password"
+
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
+
+  api:
+    container_name:  "test_api"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8081:8080"
+    depends_on:
+      - db
+    networks:
+      default:
+        ipv4_address: 172.20.0.2
+    volumes:
+      - .:/app/
+    environment:
+      DB_HOST: db
+    network_mode: testuser_default
+
+networks:
+  default:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  mysql_data:
