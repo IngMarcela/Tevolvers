@@ -1,0 +1,226 @@
+openapi: 3.0.3
+info:
+  title: Reto tecnico - Tevolvers
+  description: |-
+    Reto que tiene los siguies requerimientos:
+    - Exponer las diferentes capacidades que se solicitan por medio de una API-Rest
+    - Diseñar e implementar un CRUD en Golang (lenguaje go) donde se realicen acciones de consulta, creación, modificación y eliminación de registro.
+    - La entidad para usar en el CRUD debe contener: id(autogenerado), name, lastname, datetime, address, gender, age.
+    - Usar el motor de BD que mas se sienta comodo.
+    - Se debe usar algún ORM para interactuar con la BD.
+    - La API debe cumplir con los lineamientos de REST.
+    - La API debe contar con seguridad, puede ser autenticación con JWT, API Key o , OAuth 2.0.
+    - Debe contar con su documentación autogenerada. (OPENAPI 3 Swagger)
+    - Debe usar algún patrón de desarrollo el cual deberá ser justificado al momento de la entrevista.
+    - La API debe estar corriendo en Docker, puede ser en local, o desplegarla en algún sitio de su elección.
+    - La API debe contener paginación para mas de 10 elementos.
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: apiteam@swagger.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+tags:
+  - name: user
+    description: Gestion sobre los usuarios
+    externalDocs:
+      description: Find out more
+      url: http://swagger.io
+paths:
+  /update/{id}:
+    put:
+      tags:
+        - user
+      summary: Actualizar usuario
+      description: Actualizar usuario por ID
+      operationId: updateuser
+      requestBody:
+        description: Actualizar usuario en la base de datos
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/user'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/user'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/user'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: user not found
+        '405':
+          description: Validation exception
+  /edit/{userId}:
+    get:
+      tags:
+        - user
+      summary: Encontrar el Id del usuario
+      description: Retornar la informacion del usuario
+      operationId: getuserById
+      parameters:
+        - name: userId
+          in: path
+          description: ID of user to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/user'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: user not found
+    delete:
+      tags:
+        - user
+      summary: Borrar un usuario
+      description: borrar un usuario
+      operationId: deleteuser
+      parameters:
+        - name: api_key
+          in: header
+          description: ''
+          required: false
+          schema:
+            type: string
+        - name: userId
+          in: path
+          description: id del usuario a borrar
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '400':
+          description: Invalid user value
+  /store:
+    post:
+      tags:
+        - user
+      summary: Agregar un nuevo usuario
+      description: Agregar un nuevo usuario
+      operationId: adduser
+      requestBody:
+        description: Crear un nuevo usuario a la base de datos
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/user'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/user'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/user'
+        '405':
+          description: Invalid input
+components:
+  schemas:
+    Tag:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+      xml:
+        name: tag
+    user:
+      required:
+        - name
+        - lastname
+        - datetime
+        - address
+        - gender
+        - age
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        name:
+          type: string
+          example: Usuario 1
+        lastname:
+          type: string
+          example: Apellido 1
+        datetime:
+          type: date
+          example: "2022-01-01"
+        address:
+          type: string
+          example: "avenida siempre viva"
+        gender:
+          type: string
+          example: "F"
+        age:
+          type: integer
+          example: 19
+      xml:
+        name: user
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+        message:
+          type: string
+      xml:
+        name: '##default'
+  requestBodies:
+    user:
+      description: Objeto usuario necesita estar agregado a la base de datos
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/user'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/user'
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
